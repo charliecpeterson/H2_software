@@ -90,7 +90,11 @@ PID=$!
 PIDarr+=($PID)
 sleep 3
 echo -e $"You can now open your web browser to ${GREEN} http://localhost:${out_port} ${NOCOLOR}"
-open http://localhost:${out_port}
+if command -v <xdg-open> &> /dev/null ; then
+	xdg-open http://localhost:${out_port}
+else if command -v <open> &> /dev/null ; then
+	open http://localhost:${out_port}
+fi
 
 ### Stopping
 sleep 60
