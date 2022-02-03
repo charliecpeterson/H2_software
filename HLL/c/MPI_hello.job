@@ -1,0 +1,23 @@
+#!/bin/bash
+#$ -cwd
+#$ -o MPI_hello.out.$JOB_ID
+#$ -j y
+#$ -l h_rt=1:00:00,h_data=10G
+#$ -pe dc* 20
+
+# Echo host file information
+echo $PE
+cat $PE_HOSTFILE
+
+echo -e "\nExample using INTEL MPI\n\n"
+
+# load the job environment:
+. /u/local/Modules/default/init/modules.sh
+module load intel/2022.1.1
+
+# Compile MPI C code
+mpiicc -o MPI_hello.x MPI_hello.c
+
+# Run 
+mpirun ./MPI_hello.x
+rm MPI_hello.x

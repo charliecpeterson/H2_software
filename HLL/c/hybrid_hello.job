@@ -1,0 +1,40 @@
+#!/bin/bash
+#$ -cwd
+#$ -o hybrid_hello.out.$JOB_ID
+#$ -j y
+#$ -l rh7,h_rt=1:00:00,h_data=5G
+#$ -pe shared 4
+
+# Echo host file information
+echo $PE
+cat $PE_HOSTFILE
+
+echo -e "\n\nExample using Intel MPI\n\n"
+
+# load the job environment:
+. /u/local/Modules/default/init/modules.sh
+module load intel/2020.4
+
+export OMP_NUM_THREADS=2
+
+# Compile MPI C code
+mpiicc -o hybrid_hello.x -qopenmp hybrid_hello.c
+# Run 
+mpirun ./hybrid_hello.x
+rm ./hybrid_hello.x
+
+
+echo -e "\n\nExample using OpenMPI"
+
+# load the job environment:
+module purge
+module load openmpi
+
+export OMP_NUM_THREADS=2
+
+# Compile MPI C code
+mpicc -o hybrid_hello.x -fopenmp hybrid_hello.c
+# Run 
+mpirun ./hybrid_hello.x
+
+rm ./hybrid_hello.x

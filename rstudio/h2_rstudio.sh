@@ -25,7 +25,7 @@ echo "
 	OPTIONAL:
         -m [MEMORY]       Memory requirments in GB, default 2GB
 	-t [TIME]	Time of RSTUDIO job in HH:MM:SS, default 2:00:00
-	-l [qsub/qrsh opts]  Extra QRSH option i.e. highp	
+	-e [qsub/qrsh opts]  Extra QRSH option i.e. highp	
 "
 exit
 }
@@ -33,27 +33,23 @@ exit
 ## CLEANING UP ##
 function cleaning()
 {
-	if [ -f rstudiotmp ] ; then
-		rm rstudiotmp
-	fi
+	if [ -f rstudiotmp ] ; then rm rstudiotmp ; fi
 
 	[ ! -z "$JOBID" ] && ssh ${H2USERNAME}@hoffman2.idre.ucla.edu qdel $JOBID > /dev/null
 
-	for i in "${PIDarr[@]}"
-	do
-		pkill -P $i
-	done
+	for i in "${PIDarr[@]}" ; do pkill -P $i ; done
 	exit 1
 }
 
 
 ## GETTING COMMAND LINE OPTIONS ###
-while getopts ":u:h" options ; do
+while getopts ":u:t:m:e:h" options ; do
         case $options in
                 h ) usage; exit ;;
                 u ) H2USERNAME=$OPTARG  ;;
 		t ) JOBTIME=$OPTARG ;;
 		m ) JOBMEM=$OPTARG ;;
+		e ) EXTRA_ARG=$OPTARG ;;
                 : ) echo "-$OPTARG requires an argument"; usage; exit ;;
                 ? ) echo "-$OPTARG is not an option"; usage ; exit;;
         esac
@@ -61,9 +57,20 @@ done
 
 ## CHECK ARGS ##
 
-## CHECK MEM ##
+## CHECK USERNAME ##
+if [ -z ${H2USERNAME} ] ; then
+	echo "MUST ENTER Hoffman2 USER NAME"
+	usage
+fi
 
-if [
+## CHECK MEM ##
+if [ -z ${JOBMEM} ] ; then JOBMEM=3 ; fi
+
+## CHECK RUN TIME ##
+if [ -z ${JOBTIME} ] ; then JOBTIME="2:00:00" ; fi
+WALLTIME=`echo "$JOBTIME" | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'`
+
+## CHECK EXTRA ARGS ##
 
 ## STARING RSTUDIO JOB ##
 mktmp_cmd='mkdir -p $SCRATCH/rstudiotmp/var/run ; mkdir -p $SCRATCH/rstudiotmp/var/lib ; mkdir -p $SCRATCH/rstudiotmp/tmp'
@@ -71,7 +78,7 @@ mktmp_cmd='mkdir -p $SCRATCH/rstudiotmp/var/run ; mkdir -p $SCRATCH/rstudiotmp/v
 qrsh_cmd='source /u/local/Modules/default/init/modules.sh ; module purge ; module load singularity ; module list ; echo "JOBID: ${JOB_ID}" ; singularity run -B $SCRATCH/rstudiotmp/var/lib:/var/lib/rstudio-server -B $SCRATCH/rstudiotmp/var/run:/var/run/rstudio-server -B $SCRATCH/rstudiotmp/tmp:/tmp $H2_CONTAINER_LOC/rstudio-rocker-4.1.0'
 
 PIDarr=()
-ssh_cmd="${mktmp_cmd} ; qrsh -N RSTUDIO -l h_data=10G,h_rt=4:00:00 '${qrsh_cmd}'"
+ssh_cmd="${mktmp_cmd} ; qrsh -N RSTUDIO -l ${EXTRA_ARG}h_data=${JOBMEM}G,h_rt=${JOBTIME} '${qrsh_cmd}'"
 ssh ${H2USERNAME}@hoffman2.idre.ucla.edu "${ssh_cmd}" > rstudiotmp  2>&1 &
 PID=$!
 PIDarr+=($PID)
@@ -98,6 +105,9 @@ eval "${out_tmp}" 2>&1 &
 PID=$!
 PIDarr+=($PID)
 sleep 3
+
+
+## OPENING UP BROWSER ##
 echo -e $"You can now open your web browser to ${GREEN} http://localhost:${out_port} ${NOCOLOR}"
 
 if command -v xdg-open &> /dev/null
@@ -108,8 +118,8 @@ then
 	open http://localhost:${out_port}
 fi
 
-### Stopping
-sleep 60
+### WAITING UNTIL WALLTIME ##
+sleep $WALLTIME
 
 
 
