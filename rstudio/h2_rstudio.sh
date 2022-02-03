@@ -23,9 +23,11 @@ echo "
 	REQUIRED
 	-u [username]   Hoffman2 user name
 	OPTIONAL:
-        -m [MEMORY]       Memory requirments in GB   
+        -m [MEMORY]       Memory requirments in GB, default 2GB
+	-t [TIME]	Time of RSTUDIO job in HH:MM:SS, default 2:00:00
 	-l [qsub/qrsh opts]  Extra QRSH option i.e. highp	
 "
+exit
 }
 
 ## CLEANING UP ##
@@ -50,11 +52,18 @@ while getopts ":u:h" options ; do
         case $options in
                 h ) usage; exit ;;
                 u ) H2USERNAME=$OPTARG  ;;
+		t ) JOBTIME=$OPTARG ;;
+		m ) JOBMEM=$OPTARG ;;
                 : ) echo "-$OPTARG requires an argument"; usage; exit ;;
                 ? ) echo "-$OPTARG is not an option"; usage ; exit;;
         esac
 done
 
+## CHECK ARGS ##
+
+## CHECK MEM ##
+
+if [
 
 ## STARING RSTUDIO JOB ##
 mktmp_cmd='mkdir -p $SCRATCH/rstudiotmp/var/run ; mkdir -p $SCRATCH/rstudiotmp/var/lib ; mkdir -p $SCRATCH/rstudiotmp/tmp'
@@ -90,7 +99,14 @@ PID=$!
 PIDarr+=($PID)
 sleep 3
 echo -e $"You can now open your web browser to ${GREEN} http://localhost:${out_port} ${NOCOLOR}"
-open http://localhost:${out_port}
+
+if command -v xdg-open &> /dev/null
+then 
+	xdg-open http://localhost:${out_port}
+elif command -v open &> /dev/null
+then 
+	open http://localhost:${out_port}
+fi
 
 ### Stopping
 sleep 60
