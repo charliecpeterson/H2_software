@@ -1,0 +1,44 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+parts:
+- caption: Programming Languages
+  chapters:
+  - file: HLL/build.md
+  - file: HLL/example.md
+    sections: 
+    - file: HLL/python.md
+    - file: HLL/R.md
+    - file: HLL/java.md
+    - file: HLL/Mathematica.md
+    - file: HLL/Matlab.md
+    - file: HLL/C.md
+    - file: HLL/Fortran.md
+    - file: HLL/perl.md
+    - file: HLL/Juila.md
+    - file: HLL/Go.md
+  - file: HLL/jupyter.md
+  - file: HLL/rstudio.md
+
+- caption: Molecular
+  chapters:
+  - file: mol/gaussian.md
+  - file: mol/nwchem.md
+  - file: mol/vasp.md
+  - file: mol/lammps.md
+  - file: mol/orca.md
+  
+- caption: Biostatistics
+  chapters:
+  - file: bio/bamtools.md
+  - file: bio/bowtie2.md
+  - file: bio/samtools.md
+  - file: bio/plink.md
+ 
+- caption: Containers
+  chapters:
+  - file: containers/singularity.md
+
+

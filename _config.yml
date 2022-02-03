@@ -1,0 +1,24 @@
+# config.yml 
+title: Hoffman2 scientific software
+author: The Hoffman2 Systems Team
+logo: campus-logo.jpg
+
+execute:
+  execute_notebooks: force
+
+latex:
+  latex_documents:
+    targetname: book.tex
+
+bibtex_bibfiles:
+  - references.bib
+
+# Information about where the book exists on the web
+repository:
+        url: https://github.com/ucla/hoffman2_sample_jobs  # Online location of your book
+# Add GitHub buttons to your book
+# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
+html:
+  use_issues_button: true
+  use_repository_button: true
+  favicon: ucla_image.png
