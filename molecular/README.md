@@ -9,5 +9,6 @@ These are examples of running different Molecular Modeling applications
 	- License Software: Restricted access
 - [ORCA](https://orcaforum.kofo.mpg.de/app.php/portal) 
 - [LAMMPS](https://www.lammps.org)
-
+- [QCHEM](https://www.q-chem.com/)
+- [AMBER](https://ambermd.org/)
  

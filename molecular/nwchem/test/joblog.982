@@ -1,0 +1,39 @@
+n1826 1 pod_apollo5.q@n1826 <NULL>
+n1841 1 pod_apollo5.q@n1841 <NULL>
+n1847 1 pod_apollo5.q@n1847 <NULL>
+n1838 1 pod_apollo5.q@n1838 <NULL>
+n1829 1 pod_apollo5.q@n1829 <NULL>
+n1835 1 pod_apollo5.q@n1835 <NULL>
+n1836 1 pod_apollo5.q@n1836 <NULL>
+n1839 1 pod_apollo5.q@n1839 <NULL>
+n1842 1 pod_apollo5.q@n1842 <NULL>
+n1833 1 pod_apollo5.q@n1833 <NULL>
+n1834 1 pod_apollo5.q@n1834 <NULL>
+n1843 1 pod_apollo5.q@n1843 <NULL>
+n1846 1 pod_apollo5.q@n1846 <NULL>
+n1848 1 pod_apollo5.q@n1848 <NULL>
+n1844 1 pod_apollo5.q@n1844 <NULL>
+n1845 1 pod_apollo5.q@n1845 <NULL>
+n1825 1 pod_apollo5.q@n1825 <NULL>
+n1832 1 pod_apollo5.q@n1832 <NULL>
+n1837 1 pod_apollo5.q@n1837 <NULL>
+n1840 1 pod_apollo5.q@n1840 <NULL>
+n1827 1 pod_apollo5.q@n1827 <NULL>
+n1828 1 pod_apollo5.q@n1828 <NULL>
+n1831 1 pod_apollo5.q@n1831 <NULL>
+n1830 1 pod_apollo5.q@n1830 <NULL>
+Job 982 started on:    n1826
+Job 982 started on:    Wed Sep 22 17:28:47 PDT 2021
+ 
+Job 982 used the input file: water.nw
+ 
+Creating Scratch Tmp folder: /u/home/c/ccp2287/submit_scripts/molecular/nwchem/test/tmp
+ 
+mkdir: created directory '/u/home/c/ccp2287/submit_scripts/molecular/nwchem/test/tmp'
+Running NWChem
+ 
+Removing Scratch Tmp
+ 
+Job 982 ended on:    n1826
+Job 982 ended on:    Wed Sep 22 17:29:01 PDT 2021
+ 

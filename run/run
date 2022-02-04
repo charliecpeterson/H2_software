@@ -1,0 +1,160 @@
+#!/bin/bash
+echo -e "\e[37;42m@--------------------------------------------------------------------------------------@\e[0m"
+echo -e "\e[37;42m|     H O F F M A N 2  -  J O B    A U T O C R E A T I O N                             |\e[0m"
+echo -e "\e[37;42m@--------------------------------------------------------------------------------------@\e[0m" 
+echo -e '\E[32m'"                                                                          ctrl+c to quit "
+tput sgr0
+### USAGE STATEMENT ###
+usage ()
+{
+	echo "
+##	Last Update: 1.18.22
+##	This RUN script prompts the user for variables to send to the jobs script templete
+##	This script can be run in 2 ways
+##	1.) Interactively menu driven by using simply the command \"run\"
+##      2.) With command-line options using following switches:
+
+	-h      Show this message
+	OPTIONS:
+	-p [program] 	software program name
+	-i [input]	input filename
+	-q [QOS] 	QOS (debug, general, large)
+	-c [cores]	# computing cores (cpus)
+	-n [nodes]	# of nodes
+	-m [memory]	min memory (GB)
+	-e [email] 	email for notifications from queue 
+	-f [files] 	auxilliary list of files in \" \"
+        -j [.job]       absolute location of user .job script
+
+	Example: run -p matlab  -c 16 -i diffeq.in -f \"list.1 list.2 list.3\"
+	"
+
+}
+### PARSING THE COMMAND LINE FOR OPTIONS ###
+while getopts ":p:i:q:c:n:m:e:f:j:s:a:highp:h" options ; do
+	case $options in 
+		h ) usage; exit ;;
+		a ) prgname=$OPTARG ; opts=true ;;
+		i ) input_var=$OPTARG ; opts=true ;;
+		q ) queue=$OPTARG ; opts=true ;;
+		c ) jobslots=$OPTARG ; opts=true ;; 
+		m ) jobmem=$OPTARG ; opts=true ;;
+		e ) email=$OPTARG ; opts=true ;;
+		f ) extrafiles=$OPTARG ; opts=true ;;
+                j ) jobscpt=$OPTARG ; opts=true ;;
+		p ) highp=true ; opts=true ;;
+		: ) echo "-$OPTARG requires an argument"; usage; exit ;;
+		? ) echo "-$OPTARG is not an option"; usage ; exit;;
+	esac
+done
+
+###  SETTING PATH TO RUN SCRIPT  ##
+        run_dir=$(dirname $(realpath $0))
+
+if [ "$opts" != true ] ; then
+	echo "Please use command-line options to run the submission script"; usage ; exit
+fi
+
+###  SETTING THE PROGRAM TO RUN  ###	
+	prglist=`awk '{ORS=" ";print $0}' ${run_dir}/program.lst`
+
+	if [ "$opts" != "true" ] ; then
+		read -p "  1.)     Enter program name [$prglist]: " prgname 
+	elif [ "$opts" == "true" ] && [ -z "$prgname" ]; then
+		read -p "  1.)     Enter program name [$prglist]: " prgname 
+	fi
+	prg_inlist=`grep -xo $prgname ${run_dir}/program.lst`
+	until [ "$prgname" == "$prg_inlist" ] ; do
+		echo -e '\E[31m'"Err:  Program \"$prgname\" does not exist"
+		tput sgr0
+		read -p "  1.)     Enter program name [$prglist]: " prgname 
+		prg_inlist=`grep -xo $prgname ${run_dir}/program.lst`
+	done
+	## Check for loaded module ##
+	module_chk=`echo $LOADEDMODULES | grep -c $prgname`
+	module_load_list=`echo $LOADEDMODULES | awk 'BEGIN{RS=":"}{print "module load ", $1}'`
+	prg_version=`echo $LOADEDMODULES | awk 'BEGIN{RS=":"}{print $1}' | grep -m 1 "$prgname/"`
+	if [ $module_chk -eq 0 ] ; then 
+		echo -e '\E[31m'"ERROR: No module loaded for: $prgname"
+		tput sgr0
+		exit
+	fi
+	echo    "  Program set to: 	$prg_version "
+###  SETTING THE FILENAME AND FILETYPE  ###
+# This sed command produces filenames with no extenstion
+get_filename ()
+{
+echo $1 | sed 's/\(.*\)\.[^\.]*/\1/'
+}
+# This sed command produces the filetype from the characters after the last "."
+get_filetype ()
+{
+echo $1 | sed 's/.*\.\([^\.]*\)/\1/'
+}
+	if [ "$#" -eq "0" ]; then
+		read -p '  2.)     Enter input file: ' input_var
+	elif [ "$opts" == "true" ] && [ -z "$input_var" ]; then
+		read -p '  2.)     Enter input file: ' input_var
+	fi
+	until [[ -e $input_var ]]; do
+		echo -e '\E[31m'"Err:  File \"$input_var\" does not exist"
+		tput sgr0
+		read -p '  2.)     Enter input file: ' input_var
+	done	
+	filename=`get_filename $input_var`
+	filetype=`get_filetype $input_var`
+	echo    "  Filename set to: 	$filename"
+	echo    "  Filetype set to: 	$filetype"
+
+###  SETTING THE CURRENT WORKING DIRECTORY  ###
+	subdir=`pwd`
+	echo    "  JOB submitted from: 	$subdir"
+###  SETTING THE HIGHP  ###
+	highp_ans="Y N"
+	if [ "$#" -eq "0" ] ; then
+		read -p "  3.)   Are you using highp? (Y/N): " highp
+	elif [ "$opts" == "true" ] && [ -z "$highp" ] ; then
+		echo "  Please enter a highp answer with the -h option: (Y/N) "
+	fi
+	if [ "$highp" == "true" ] ; then
+		jobhp=",highp"
+	else
+		jobhp=""
+	fi	
+###  SETTING # OF CORES/NODES FOR PARALLEL JOBS  ###
+	if [ "$#" -eq "0" ] ; then
+		read -p '  4.)     Enter # cores : ' jobslots
+	        until [[ $cores =~ ^[0-9]+$ ]] ; do
+	              read -p "  4.)     Please Enter # cores : " jobslots
+	        done
+	elif [ "$opts" == "true" ] && [ -z "$jobslots" ]; then
+		echo "Please enter number of cores with the -p option" ; usage ;exit
+	fi
+
+	
+###  SETTING UP EMAIL NOTIFICATION  ###
+	if [ "$#" -eq "0" ] ; then
+		read -p "  5.)     Enter email address for notification : " jobemail
+	echo "  Email set to:		$jobemail"
+	fi
+  	if [ "$email" == "" ] ; then 
+  		jobemail=$USER@mail
+  	fi
+
+###  SETTING MEMORY REQUIREMENTS  ###
+
+
+###  SUBMITTING THE JOB  ###
+# The below variables are exported through SGE via the "-V" as environment variables to the execution nodes
+export jobmem jobtime jobhp  module_load_list
+#export gaussver2 prgname filename filetype subdir queue extrafiles nodes nppn cores jobmem 
+## general submittion for other codes ##
+	cat ${run_dir}/run${prgname}.job > $subdir/temp.job
+	envsubst < $subdir/temp.job > $subdir/$filename.job
+	rm $subdir/temp.job
+echo -e "\e[37;42m--> Submitting job with command: qsub ${filename}.job \e[0m"
+tput sgr0
+#qsub ${filename}.job 
+sleep 1
+echo " "
+#squeue -u $USER

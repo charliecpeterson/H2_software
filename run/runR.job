@@ -1,0 +1,39 @@
+#!/bin/bash
+#$ -cwd
+#$ -o  ${name}.joblog.\$JOB_ID
+#$ -j y
+#  Resources requested:
+#$ -l h_data=${jobmem}G,h_rt=${jobtime}:00:00${jobhp}${jobex}
+#$ -pe shared ${jobslots}
+#  Email address to notify
+#$ -M ${jobemail}
+#$ -m bea
+# #$ -V
+
+#
+# Output job info on joblog file:
+#
+echo " "
+echo "Job ${name}, ID no. \$JOB_ID started on:   "\` hostname -s \`
+echo "Job ${name}, ID no. \$JOB_ID started at:   "\` date \`
+echo " "
+
+#
+# Set up job environment:
+#
+. /u/local/Modules/default/init/modules.sh
+${module_load_list}
+
+#
+# Run the R script:
+#
+echo ""
+echo R CMD BATCH  ${args} ${name}.R ${name}.out.\$JOB_ID
+#
+/usr/bin/time -p \
+R CMD BATCH  ${args} ${name}.R  ${name}.out.\$JOB_ID
+#
+echo " "
+echo "Job ${name}, ID no. \$JOB_ID finished at:  "\` date \`
+echo " "
+
