@@ -121,6 +121,8 @@ fi
 ## CHECK EXTRA ARGS ##
 
 ## STARING RSTUDIO JOB ##
+sleep 2
+trap cleaning EXIT
 mktmp_cmd=`echo 'mkdir -p \\\${SCRATCH}/rstudiotmp/var/run ; mkdir -p \\\${SCRATCH}/rstudiotmp/var/lib ; mkdir -p \\\${SCRATCH}/rstudiotmp/tmp'`
 
 qrsh_cmd=`echo 'source /u/local/Modules/default/init/modules.sh ; module purge ; module load singularity ; module list ; echo HOSTNAME ; echo \\\$HOSTNAME ; singularity run -B \\\$SCRATCH/rstudiotmp/var/lib:/var/lib/rstudio-server -B \\\$SCRATCH/rstudiotmp/var/run:/var/run/rstudio-server -B \\\$SCRATCH/rstudiotmp/tmp:/tmp \\\$H2_CONTAINER_LOC/rstudio-rocker-4.1.0'`
