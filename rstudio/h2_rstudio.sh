@@ -55,6 +55,14 @@ while getopts ":u:t:m:e:h" options ; do
                 ? ) echo "-$OPTARG is not an option"; usage ; exit;;
         esac
 done
+
+## CHECK FOR EXPECT ##
+if ! command -v expect &> /dev/null
+then
+        echo "You MUST have the expect command installed on your system... Exiting"
+	exit
+fi
+
 ## CHECK ARGS ##
 
 ## CHECK USERNAME ##
