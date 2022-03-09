@@ -1,8 +1,9 @@
 #!/bin/bash
 ## This script will run Rstudio server on Hoffman2
-## This uses a Singularity container with R/Rstudio
+## This uses an Apptainer container with R/Rstudio
 # Author Charlie Peterson <cpeterson@oarc.ucla.edu>
 # Date Created: 2/2/2022
+# Date Modified: 3/9/2022 - change to apptainer
 
 ## TO DO:
 ##
@@ -133,7 +134,7 @@ sleep 2
 trap cleaning EXIT
 mktmp_cmd=`echo 'mkdir -p \\\${SCRATCH}/rstudiotmp/var/run ; mkdir -p \\\${SCRATCH}/rstudiotmp/var/lib ; mkdir -p \\\${SCRATCH}/rstudiotmp/tmp'`
 
-qrsh_cmd=`echo 'source /u/local/Modules/default/init/modules.sh ; module purge ; module load singularity ; module list ; echo HOSTNAME ; echo \\\$HOSTNAME ; singularity run -B \\\$SCRATCH/rstudiotmp/var/lib:/var/lib/rstudio-server -B \\\$SCRATCH/rstudiotmp/var/run:/var/run/rstudio-server -B \\\$SCRATCH/rstudiotmp/tmp:/tmp \\\$H2_CONTAINER_LOC/rstudio-rocker-4.1.0'`
+qrsh_cmd=`echo 'source /u/local/Modules/default/init/modules.sh ; module purge ; module load apptainer ; module list ; echo HOSTNAME ; echo \\\$HOSTNAME ; apptainer run -B \\\$SCRATCH/rstudiotmp/var/lib:/var/lib/rstudio-server -B \\\$SCRATCH/rstudiotmp/var/run:/var/run/rstudio-server -B \\\$SCRATCH/rstudiotmp/tmp:/tmp \\\$H2_CONTAINER_LOC/h2-rstudio_4.1.0.sif'`
 
 ssh_cmd="echo starting ; ${mktmp_cmd} ; qrsh -N RSTUDIO -l ${EXTRA_ARG}h_data=${JOBMEM}G,h_rt=${JOBTIME} '${qrsh_cmd}'"
 expect <<- eof1 > rstudiotmp  &
