@@ -1,0 +1,43 @@
+#!/bin/bash
+
+##  Variables exported from the run script  ##
+# prgname filename filetype SGE_CWD_PATH queue resource extrafiles nnodes nppn nproc jobmem cluster
+# Note: filename here represents the entire dirctory of Gaussian 09 input files
+hostname
+date
+prgname=math
+## Setting up scratch ##
+# Uncomment below and final line to enable local storage, comment out /scratch
+#STORAGE_DIR="/storage/local/$USER/${JOB_ID}.${filename}"
+echo " Submitting job with command: sbatch $SLURMOPT ${filename}.job"
+
+STORAGE_DIR="/storage/scratch2/$USER/${SLURM_JOB_ID}.${filename}"
+export  STORAGE_DIR
+
+mkdir -pv $STORAGE_DIR
+echo -n ">>>>> Changing to GAUSS_SCRDIR: "
+cd $STORAGE_DIR
+pwd
+#  Copying relavent files  ##
+cp $SLURM_SUBMIT_DIR/${filename}.${filetype} $STORAGE_DIR
+echo "Extrafiles: $extrafiles"
+for a in $extrafiles ; do cp -r $SLURM_SUBMIT_DIR/$a $STORAGE_DIR/ ;  done
+echo ">> These are the files that are in $STORAGE_DIR << "
+ls -l
+echo "========== START OF ${filename}.${filetype} =========="
+cat ${filename}.${filetype}
+echo "========== END OF ${filename}.${filetype} =========="
+##  Executing Gaussian 09  ##
+echo "The command $prgname is located at: "
+which $prgname
+time $prgname -nosplash -nodesktop -nodisplay <  ${filename}.${filetype} > ${filename}.out
+env
+##  These files will be copied back to your directory  ##
+cp -a $STORAGE_DIR $SLURM_SUBMIT_DIR
+cd /tmp 
+#rm -rv $GAUSS_SCRDIR
+echo "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
+echo -n ">> Job finished @ "
+date
+echo ">> Output can be found in: $SLURM_SUBMIT_DIR"
+rm $SLURM_SUBMIT_DIR/$filename.job

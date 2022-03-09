@@ -1,0 +1,44 @@
+#!/bin/bash
+#$ -cwd
+#$ -o  .joblog.\
+#$ -j y
+#  Resources requested:
+#$ -l h_data=G,h_rt=:00:00,highp
+#$ -pe shared 
+#  Email address to notify
+#$ -M 
+#$ -m bea
+# #$ -V
+
+#
+# Output job info on joblog file:
+#
+echo " "
+echo "Job , ID no. \ started on:   "\` hostname -s \`
+echo "Job , ID no. \ started at:   "\` date \`
+echo " "
+
+#
+# Set up job environment:
+#
+. /u/local/Modules/default/init/modules.sh
+module load  IDRE
+module load  intel/2020.4
+module load  /u/home/c/ccp2287/modules/modulefiles/java/jdk-11.0.14
+module load  curl/7.70.0
+module load  R/4.1.0
+module load  R/4.1.0-DS
+
+#
+# Run the R script:
+#
+echo ""
+echo R CMD BATCH   .R .out.\
+#
+/usr/bin/time -p \
+R CMD BATCH   .R  .out.\
+#
+echo " "
+echo "Job , ID no. \ finished at:  "\` date \`
+echo " "
+

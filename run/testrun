@@ -1,0 +1,52 @@
+#!/bin/bash
+## This script will run Rstudio server on Hoffman2
+## This uses a Singularity container with R/Rstudio
+# Author Charlie Peterson <cpeterson@oarc.ucla.edu>
+# Date Created: 2/2/2022
+
+echo -e "\e[37;42m@--------------------------------------------------------------------------------------@\e[0m"
+echo -e "\e[37;42m|                     H O F F M A N 2  -  R S U T D I O                                |\e[0m"
+echo -e "\e[37;42m@--------------------------------------------------------------------------------------@\e[0m"
+echo -e '\E[32m'"                                                                          ctrl+c to quit "
+tput sgr0
+GREEN='\033[0;32m'
+
+RESETFONT='\033[0m'
+## USAGE ##
+usage ()
+{
+echo "
+##      This Script will create a Rstudio session on a compute node on Hoffman2
+
+        -h       Show this message
+        OPTIONS:
+        REQUIRED
+        -u [username]   Hoffman2 user name
+        OPTIONAL:
+        -m [MEMORY]       Memory requirments in GB
+        -l [qsub/qrsh opts]  Extra QRSH option i.e. highp
+"
+}
+usage()
+
+## GETTING COMMAND LINE OPTIONS ###
+while getopts ":h:u:m:l" options ; do
+        case $options in
+                h ) usage; exit ;;
+                u ) H2USERNAME=$OPTARG ;;
+                : ) echo "-$OPTARG requires an argument" ; usage; exit ;;
+                ? ) echo "-$OPTARG is not an option" ; usage ; exit ;;
+        esac
+done
+
+## STARING RSTUDIO JOB ##
+
+qrsh_cmd=`echo "
+module load singularity \
+&& module list
+"`
+
+#ssh ${H2USERNAME}@hoffman2.idre.ucla "qrsh -l h_data,h_rt=4:00:00 \${qrsh_cmd}"
+echo ${H2USERNAME}
+#ssh ${H2USERNAME}@hoffman2.idre.ucla "echo hi"
+
