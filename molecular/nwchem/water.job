@@ -6,7 +6,7 @@
 #$ -j y
 # Edit the line below to request the appropriate runtime and memory
 # (or to add any other resource) as needed:
-#$ -l rh7,h_rt=1:00:00,h_data=5G
+#$ -l h_rt=1:00:00,h_data=5G
 # Add multiple cores/nodes as needed:
 #$ -pe dc* 72
 # Email address to notify
@@ -41,13 +41,13 @@ cd $JOB_SCRATCH_TMP
 
 # load the job environment:
 . /u/local/Modules/default/init/modules.sh
-module load intel/2020.4
-module load nwchem
+module load intel/2022.1.1
+module load nwchem/7.0.2
 
 # Running NWCHEM
 echo "Running NWChem"
 echo " "
-`which mpirun` -np $NSLOTS $NWCHEM_BIN/nwchem ${input}.nw 2>&1 > ${SGE_O_WORKDIR}/${input}.out.$JOB_ID
+`which mpirun` -np $NSLOTS nwchem ${input}.nw 2>&1 > ${SGE_O_WORKDIR}/${input}.out.$JOB_ID
 
 #Moving output files and remove tmp
 cd $SGE_O_WORKDIR
