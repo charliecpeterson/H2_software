@@ -20,4 +20,12 @@ This will run the `water.nw` on Hoffman2. It will create a TMP directory to run 
 
 You can use `water.job` as a template to run other NWChem jobs by renaming this file to the name of your NWChem input file. You can also change the location of the TMP directory in this job script.
 
- 
+## Example Container
+
+We have built an NWChem container that can be ran with Apptainer. 
+
+This container is located at `$H2_CONTAINER_LOC`
+
+An example of using the NWChem container (With MPI) is located at `water-container.job`
+
+
