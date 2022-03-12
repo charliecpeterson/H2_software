@@ -20,7 +20,7 @@ module load apptainer/1.0.0
 #Run rstudio
 apptainer run -B $SCRATCH/rstudiotmp/var/lib:/var/lib/rstudio-server -B $SCRATCH/rstudiotmp/var/run:/var/run/rstudio-server -B $SCRATCH/rstudiotmp/tmp:/tmp $H2_CONTAINER_LOC/h2-rstudio_4.1.0.sif
 # This command will display some information and a `ssh -L ...` command for you to run on a separate terminal 
-``
+```
 
 Then open another terminal to connect to hoffman2
 
