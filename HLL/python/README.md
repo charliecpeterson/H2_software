@@ -45,6 +45,8 @@ pip3 install scikit-learn --user
 
 You will notice the `--user` flag on `pip3`. Is will ensure that you will install the package in your $HOME directory. Normally, pip will try to install in the main Python build, in which, users do not have write access and you may see errors when building your package. When using `--user` by deafult, it will install it in `$HOME/.local/lib/python3.7/site-packages`. 
 
+**NOTE** Users will need be aware when they are installing multiple packages in `$HOME/.local` with `pip3 --user`. Installing conflicting packages with different versions of python will let to errors. When working on different projects, it it best to use Virtual Environment or Anaconda to install python packages and dependencies.
+
 If you want to install this package in another directory (Maybe you $HOME quota is filling up), you can install this package in any directory you have write access. For example, if you want to install this package in `$SCRATCH/python-pkg`,
 
 ```
@@ -92,10 +94,9 @@ TO create a environment, you will first need to load the Anaconda module
 
 ```
 module load anaconda3/2020.11
-. $CONDA_DIR/etc/profile/conda.sh
 ```
 
-This is load anaconda. BTW, there is NO need to load a python module, since you will create and run python in your local environment.
+This will load anaconda into your env. There is **NO** need to load a python module, since you will create and run python in your local environment.
 
 **NOTE** There is NO need to run `conda init`. Anaconda is environment is already load when you run the `conda.sh` script. When you run `conda init`, it will modify your `.bashrc` file and possibly break your created env.
 
@@ -106,11 +107,12 @@ conda create --name mypython3.7 python=3.7
 conda activate mypython3.7
 ```
 
-This will create a python env, version 3.7, with the name `mypython3.7`. Then it will activate the new environment. From here you can install any package you want with `conda install` or `pip install`. 
+This will create a python env, version 3.7, with the name `mypython3.7`. Then it will activate the new environment. From here you can install any package you want with `conda install` or `pip install`. Do **NOT** user ``--user` with pip in this case. You want the package to install in the conda env, not in $HOME/.local 
 
 ```
 conda activate mypython3.7
 conda install scipy=0.15.0
+pip install matplotlib
 ```
 
 By default, conda envs are install in `$HOME/.conda` directories. You can create env in other directories by 
@@ -122,7 +124,5 @@ conda active $SCRATCH/mypython
 
 This will install the conda env in a custom location. You can install your conda env in a shared (PROJECT) directory so they can be shared with other users.
 
-
-## Examples
 
 
